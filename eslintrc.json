@@ -1,0 +1,46 @@
+{
+  "env": {
+      "browser": true,
+      "commonjs": true,
+      "mocha": true,
+      "node": true,
+      "es6": true
+  },
+  "plugins": [
+      "mocha",
+      "chai-expect",
+      "chai-friendly"
+  ],
+  "extends": "eslint:recommended",
+  "parserOptions": {
+      "ecmaVersion": 9,
+      "ecmaFeatures": {
+          "jsx": true
+      },
+      "sourceType": "module"
+  },
+  "rules": {
+      "chai-expect/missing-assertion": "off",
+      "chai-expect/terminating-properties": 1,
+      "no-unused-expressions": "off",
+      "chai-friendly/no-unused-expressions": "off",
+      "no-console": "off",
+      "indent": [
+          "error",
+          2,
+          { "SwitchCase": 1 }
+      ],
+      "linebreak-style": [
+          "error",
+          "unix"
+      ],
+      "quotes": [
+          "error",
+          "single"
+      ],
+      "semi": [
+          "error",
+          "always"
+      ]
+  }
+}

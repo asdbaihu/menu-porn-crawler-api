@@ -1,0 +1,6 @@
+.editorconfig
+database.json
+LICENSE
+package.json
+package-lock.json
+*.md
