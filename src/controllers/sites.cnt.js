@@ -16,7 +16,7 @@ class sitesController {
       )
       .catch(
         erro => {
-          res.status(httpStatus.SERVICE_UNAVAILABLE).send(erro);
+          res.status(httpStatus.UNPROCESSABLE_ENTITY).send(erro);
         }
       );
   }
