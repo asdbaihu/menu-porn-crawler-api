@@ -2,16 +2,15 @@ const Sequelize = require('sequelize')
 
   , validations = require('../utils/validations');
 
-class SiteModel {
-  constructor(site) {
+class TagModel {
+  constructor(tag) {
     this.name = '';
-    this.url = '';
     this.id = undefined;
     this.createdAt = new Date();
     this.updatedAt = new Date();
 
-    if (!site || typeof site !== 'object') return;
-    validations.smartMerge(this, site);
+    if (!tag || typeof tag !== 'object') return;
+    validations.smartMerge(this, tag);
   }
 
   static defineEntityStructure() {
@@ -27,11 +26,6 @@ class SiteModel {
         unique: true,
         allowNull: false
       },
-      url: {
-        type: Sequelize.STRING,
-        unique: true,
-        allowNull: false,
-      },
       createdAt: {
         type: Sequelize.DATE,
         allowNull: false
@@ -43,4 +37,4 @@ class SiteModel {
     };
   }
 }
-module.exports = SiteModel;
+module.exports = TagModel;

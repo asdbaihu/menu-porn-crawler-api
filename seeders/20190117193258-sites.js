@@ -4,27 +4,28 @@ const SiteModel = require('../src/models/site.model');
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-
-    return queryInterface
-      .createTable('Sites',
+    const model = queryInterface
+      .sequelize
+      .define('sites',
         SiteModel.defineEntityStructure()
-      )
+      );
+
+    return model
+      .sync()
       .then(
-        _ => {
-          return queryInterface
-            .bulkInsert('Sites', [
-              new SiteModel(
-                {
-                  name: 'PornHub',
-                  url: 'https://pt.pornhub.com',
-                }
-              )
-            ], {});
-        }
+        _ => queryInterface
+          .bulkInsert('sites', [
+            new SiteModel(
+              {
+                name: 'PornHub',
+                url: 'https://pt.pornhub.com',
+              }
+            )
+          ], {})
       );
   },
 
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Sites');
+    return queryInterface.dropTable('sites');
   }
 };

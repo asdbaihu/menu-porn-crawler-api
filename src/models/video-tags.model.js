@@ -2,16 +2,17 @@ const Sequelize = require('sequelize')
 
   , validations = require('../utils/validations');
 
-class SiteModel {
-  constructor(site) {
+class VideoTagsModel {
+  constructor(videoTags) {
     this.name = '';
-    this.url = '';
+    this.videoId = '';
     this.id = undefined;
+    this.tagId = undefined;
     this.createdAt = new Date();
     this.updatedAt = new Date();
 
-    if (!site || typeof site !== 'object') return;
-    validations.smartMerge(this, site);
+    if (!videoTags || typeof videoTags !== 'object') return;
+    validations.smartMerge(this, videoTags);
   }
 
   static defineEntityStructure() {
@@ -22,15 +23,26 @@ class SiteModel {
         autoIncrement: true,
         allowNull: false,
       },
+      tagId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: { 
+          key: 'id',
+          model: 'tags' 
+        }
+      },
+      videoId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: { 
+          key: 'id',
+          model: 'videos' 
+        }
+      },
       name: {
         type: Sequelize.STRING,
         unique: true,
         allowNull: false
-      },
-      url: {
-        type: Sequelize.STRING,
-        unique: true,
-        allowNull: false,
       },
       createdAt: {
         type: Sequelize.DATE,
@@ -43,4 +55,4 @@ class SiteModel {
     };
   }
 }
-module.exports = SiteModel;
+module.exports = VideoTagsModel;
