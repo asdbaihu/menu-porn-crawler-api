@@ -1,5 +1,7 @@
-const logger = require('./logger.mid');
+const logger = require('./logger.mid')
+  , cors = require('./cors.mid');
 
 module.exports = app => {
-  app.use((req, res, next) => logger(req, res, next));
+  app.use(logger);
+  app.use(cors);
 };

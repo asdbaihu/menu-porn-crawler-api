@@ -7,6 +7,7 @@ class DbConnection {
     this.instance = new Sequelize(db.schema, db.user, db.password, {
       operatorsAliases: false, 
       dialect: 'mysql',
+      logging: false,
       host: db.host,
       port: db.port
     });

@@ -3,5 +3,6 @@ const controller = require('../controllers/base.cnt')
   , router = express.Router();
 
 router.get('/', controller.index);
+router.get('/test', controller.testSite);
 
 module.exports = router;

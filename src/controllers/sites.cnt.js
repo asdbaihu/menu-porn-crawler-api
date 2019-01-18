@@ -1,7 +1,7 @@
 const httpStatus = require('http-status-codes')
   , sitesService = require('../services/sites.service');
 
-class sitesController {
+class SitesController {
   constructor() {    
     sitesService.sync();
   }
@@ -22,4 +22,4 @@ class sitesController {
   }
 }
 
-module.exports = new sitesController();
+module.exports = new SitesController();
