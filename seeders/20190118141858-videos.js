@@ -17,7 +17,7 @@ module.exports = {
           new VideoModel(
             {
               siteId: 1,
-              time: new Date().toLocaleTimeString(),
+              time: new Date().toLocaleTimeString().split(' ')[0],
               name: 'MILF DE CORPO PERFEITO É FODIDA COM DEDO ENFIADO NO CÚ',
               url: 'https://pt.pornhub.com/view_video.php?viewkey=ph5c0c9d8bb437e',
             }
