@@ -1,12 +1,11 @@
 
 const { mode } = require('../environment');
 
-class baseController {
-  constructor() { }
+const baseController = {
 
   index(req, res) {
     res.send(`<center style="font-size: 5em; font-family: 'Arial'; line-height: 95vh;">Api works in ${mode}</center>`);
-  }
+  },
 
   testSite(req, res) {
     res.send(`<script>
@@ -41,4 +40,4 @@ class baseController {
   }
 }
 
-module.exports = new baseController();
+module.exports = baseController;

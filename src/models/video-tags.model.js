@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize')
 
-  , validations = require('../utils/validations');
+  , { smartMerge } = require('../utils/helpers');
 
 class VideoTagsModel {
   constructor(videoTags) {
@@ -12,7 +12,7 @@ class VideoTagsModel {
     this.updatedAt = new Date();
 
     if (!videoTags || typeof videoTags !== 'object') return;
-    validations.smartMerge(this, videoTags);
+    smartMerge(this, videoTags);
   }
 
   static defineEntityStructure() {

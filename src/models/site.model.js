@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize')
 
-  , validations = require('../utils/validations');
+  , { smartMerge } = require('../utils/helpers');
 
 class SiteModel {
   constructor(site) {
@@ -11,7 +11,7 @@ class SiteModel {
     this.updatedAt = new Date();
 
     if (!site || typeof site !== 'object') return;
-    validations.smartMerge(this, site);
+    smartMerge(this, site);
   }
 
   static defineEntityStructure() {

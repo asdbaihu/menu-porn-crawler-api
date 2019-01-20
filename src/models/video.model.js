@@ -1,19 +1,21 @@
 const Sequelize = require('sequelize')
 
-  , validations = require('../utils/validations');
+  , { smartMerge } = require('../utils/helpers');
 
 class VideoModel {
   constructor(video) {
     this.siteId = 0;
     this.name = '';
     this.url = '';
+    this.views = 0;
+    this.clicks = 0;
     this.id = undefined;
     this.time = undefined;
     this.createdAt = new Date();
     this.updatedAt = new Date();
 
     if (!video || typeof video !== 'object') return;
-    validations.smartMerge(this, video);
+    smartMerge(this, video);
   }
 
   static defineEntityStructure() {
@@ -34,7 +36,6 @@ class VideoModel {
       },
       name: {
         type: Sequelize.STRING,
-        unique: true,
         allowNull: false
       },
       url: {
@@ -45,6 +46,13 @@ class VideoModel {
       time: {
         type: Sequelize.TIME,
         allowNull: false
+      },
+      views: {
+        type: Sequelize.TIME,
+        allowNull: false
+      },
+      clicks: {
+        type: Sequelize.INTEGER
       },
       createdAt: {
         type: Sequelize.DATE,
