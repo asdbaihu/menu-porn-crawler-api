@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize')
 
+  , defaultFields = require('./default.model')
   , { smartMerge } = require('../utils/helpers');
 
 class SiteModel {
@@ -16,12 +17,7 @@ class SiteModel {
 
   static defineEntityStructure() {
     return {
-      id: {
-        primaryKey: true,
-        type: Sequelize.INTEGER,
-        autoIncrement: true,
-        allowNull: false,
-      },
+      ...defaultFields,
       name: {
         type: Sequelize.STRING,
         unique: true,
@@ -31,14 +27,9 @@ class SiteModel {
         type: Sequelize.STRING,
         unique: true,
         allowNull: false,
-      },
-      createdAt: {
-        type: Sequelize.DATE,
-        allowNull: false
-      },
-      updatedAt: {
-        type: Sequelize.DATE,
-        allowNull: false
+        validate: {            
+          isUrl: true
+        }
       }
     };
   }

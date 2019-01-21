@@ -1,25 +1,29 @@
 const httpStatus = require('http-status-codes')
-  , videosService = require('../services/videos.service')
-  , videoTagsService = require('../services/video-tags.service');
+
+  , Pagination = require('../utils/pagination')
+  , videosService = require('../services/videos.service');
 
 class VideosController {
-  constructor() {    
+  constructor() {
     videosService.sync();
-    videoTagsService.sync();
   }
 
   async getAll(req, res) {
+    let pagination = new Pagination(req.query);
+
+    const { count } = await videosService
+      .findAndCountAll()
+      .catch(
+        erro => res.status(httpStatus.FAILED_DEPENDENCY).send(erro)
+      );
+
     await videosService
-      .findAll()
+      .findAll(pagination.query(count))
       .then(
-        data => {
-          res.status(httpStatus.OK).send(data);
-        }
+        data => res.status(httpStatus.OK).send({ data, ...pagination })
       )
       .catch(
-        erro => {
-          res.status(httpStatus.UNPROCESSABLE_ENTITY).send(erro);
-        }
+        erro => res.status(httpStatus.FAILED_DEPENDENCY).send(erro)
       );
   }
 }

@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize')
 
+  , defaultFields = require('./default.model')
   , { smartMerge } = require('../utils/helpers');
 
 class VideoModel {
@@ -20,12 +21,7 @@ class VideoModel {
 
   static defineEntityStructure() {
     return {
-      id: {
-        primaryKey: true,
-        type: Sequelize.INTEGER,
-        autoIncrement: true,
-        allowNull: false,
-      },
+      ...defaultFields,
       siteId: {
         type: Sequelize.INTEGER,
         allowNull: false,
@@ -36,31 +32,36 @@ class VideoModel {
       },
       name: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
+        set(value) {
+          this.setDataValue('name', value.toLowerCase());
+        }
       },
       url: {
         type: Sequelize.STRING,
         unique: true,
         allowNull: false,
+        validate: {            
+          isUrl: true
+        }
       },
       time: {
         type: Sequelize.TIME,
         allowNull: false
       },
       views: {
-        type: Sequelize.TIME,
-        allowNull: false
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        validate: {  
+          isInt: true
+        }
       },
       clicks: {
-        type: Sequelize.INTEGER
-      },
-      createdAt: {
-        type: Sequelize.DATE,
-        allowNull: false
-      },
-      updatedAt: {
-        type: Sequelize.DATE,
-        allowNull: false
+        type: Sequelize.INTEGER,
+        defaultValue: 0,
+        validate: {  
+          isInt: true
+        }
       }
     };
   }

@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize')
 
+  , defaultFields = require('./default.model')
   , { smartMerge } = require('../utils/helpers');
 
 class TagModel {
@@ -15,24 +16,14 @@ class TagModel {
 
   static defineEntityStructure() {
     return {
-      id: {
-        primaryKey: true,
-        type: Sequelize.INTEGER,
-        autoIncrement: true,
-        allowNull: false,
-      },
+      ...defaultFields,
       name: {
         type: Sequelize.STRING,
         unique: true,
-        allowNull: false
-      },
-      createdAt: {
-        type: Sequelize.DATE,
-        allowNull: false
-      },
-      updatedAt: {
-        type: Sequelize.DATE,
-        allowNull: false
+        allowNull: false,
+        set(value) {
+          this.setDataValue('name', value.toLowerCase());
+        }
       }
     };
   }
