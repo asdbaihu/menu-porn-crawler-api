@@ -6,9 +6,33 @@
   "scripts": {
     "start": "npx nodemon ./src/application mode=dev",
     "test": "npx mocha ./spec/**/*.spec.js mode=test",
+    "build": "npm run babel && npm run minify",
+    "babel": "npx babel src --out-dir build",
+    "minify": "npx uglifyjs-folder build -o build/ -c -m -e -x .js",
     "seed:undo": "npx sequelize db:seed:undo:all",
     "seed": "npx sequelize db:seed:all",
     "lint": "npx eslint ./"
+  },
+  "nyc": {
+    "all": true,
+    "include": [
+      "src/**/*.js"
+    ],
+    "reporter": [
+      "text-summary",
+      "html",
+      "lcov"
+    ],
+    "extension": [
+      ".js"
+    ],
+    "exclude": [
+      "src/**/*.html",
+      "**/*.spec.js",
+      "ci_scripts",
+      "build",
+      "spec"
+    ]
   },
   "repository": {
     "type": "git",
@@ -43,6 +67,10 @@
     "superagent": "^4.1.0"
   },
   "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.2.2",
+    "@babel/polyfill": "^7.2.5",
+    "@babel/preset-env": "^7.3.1",
     "chai": "^4.2.0",
     "chai-http": "^4.2.1",
     "eslint": "^5.12.1",
@@ -50,8 +78,12 @@
     "eslint-plugin-chai-friendly": "^0.4.1",
     "eslint-plugin-mocha": "^5.2.1",
     "mocha": "^5.2.0",
+    "mock-require": "^3.0.3",
     "nodemon": "^1.18.9",
+    "npx": "^10.2.0",
+    "nyc": "^13.1.0",
     "rewire": "^4.0.1",
-    "sequelize-cli": "^5.4.0"
+    "sequelize-cli": "^5.4.0",
+    "sinon": "^7.2.3"
   }
 }
