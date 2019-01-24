@@ -1,24 +1,24 @@
 const httpStatus = require('http-status-codes')
+
+  , { response, log } = require('../utils/errors')
   , sitesService = require('../services/sites.service');
 
 class SitesController {
-  constructor() {    
-    sitesService.sync();
+  constructor() {
+    sitesService.sync()
+      .catch(log('sync sites controller'));
   }
 
   async getAll(req, res) {
-    await sitesService
-      .findAll()
-      .then(
-        data => {
-          res.status(httpStatus.OK).send(data);
-        }
-      )
-      .catch(
-        erro => {
-          res.status(httpStatus.UNPROCESSABLE_ENTITY).send(erro);
-        }
-      );
+    try {
+      const data = await sitesService
+        .findAll()
+        .catch(response.r1);
+
+      res.send(data);
+    } catch (e) {
+      res.status(e.status).send(e.erro);
+    }
   }
 }
 

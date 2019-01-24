@@ -1,30 +1,32 @@
-const httpStatus = require('http-status-codes')
+const express = require('express')
+  , httpStatus = require('http-status-codes')
 
+  , { response, log } = require('../utils/errors')
   , Pagination = require('../utils/pagination')
   , videosService = require('../services/videos.service');
 
 class VideosController {
   constructor() {
-    videosService.sync();
+    videosService.sync()
+      .catch(log('sync videos controller'));
   }
 
-  async getAll(req, res) {
-    let pagination = new Pagination(req.query);
+  async getAll(req = express.request, res = express.response) {
+    try {
+      let pagination = new Pagination(req.query);
 
-    const { count } = await videosService
-      .findAndCountAll()
-      .catch(
-        erro => res.status(httpStatus.FAILED_DEPENDENCY).send(erro)
-      );
+      const { count } = await videosService
+        .findAndCountAll()
+        .catch(response.r1);
 
-    await videosService
-      .findAll(pagination.query(count))
-      .then(
-        data => res.status(httpStatus.OK).send({ data, ...pagination })
-      )
-      .catch(
-        erro => res.status(httpStatus.FAILED_DEPENDENCY).send(erro)
-      );
+      const data = await videosService
+        .findAll(pagination.query(count))
+        .catch(response.r1);
+
+      res.send({ data, ...pagination });
+    } catch (e) {
+      res.status(e.status).send(e.erro);
+    }
   }
 }
 

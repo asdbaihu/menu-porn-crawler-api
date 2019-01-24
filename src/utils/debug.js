@@ -1,4 +1,4 @@
-const { mode } = require('./environment');
+const { mode } = require('../environment');
 
 module.exports = {
   log: console.log,

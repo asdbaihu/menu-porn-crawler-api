@@ -23,9 +23,10 @@ const express   = require('express')
   , http        = require('http')
   , app         = express()
 
-  , { log }     = require('./debug')
+  , { log }     = require('./utils/debug')
+  
   , routes      = require('./routes')
-  , parser      = require('./parser')
+  , parser      = require('./utils/parser')
   , middlewares = require('./middlewares');
 
 

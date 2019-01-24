@@ -1,24 +1,24 @@
 const httpStatus = require('http-status-codes')
+
+  , { response, log } = require('../utils/errors')
   , tagsService = require('../services/tags.service');
 
 class TagsController {
-  constructor() {    
-    tagsService.sync();
+  constructor() {
+    tagsService.sync()
+      .catch(log('sync tags controller'));
   }
 
   async getAll(req, res) {
-    await tagsService
-      .findAll()
-      .then(
-        data => {
-          res.status(httpStatus.OK).send(data);
-        }
-      )
-      .catch(
-        erro => {
-          res.status(httpStatus.UNPROCESSABLE_ENTITY).send(erro);
-        }
-      );
+    try {
+      const data = await tagsService
+        .findAll()
+        .catch(response.r1);
+
+      res.send(data);
+    } catch (e) {
+      res.status(e.status).send(e.erro);
+    }
   }
 }
 
