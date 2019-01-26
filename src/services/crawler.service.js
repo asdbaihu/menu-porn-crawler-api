@@ -1,30 +1,71 @@
-const cheerio = require('cheerio');
+const phantom = require('phantom');
 
 class CrawlerService {
 
   constructor() { }
 
-  extractFromHtml(html, querys, source) {
-    const array = Array.isArray(source) ? source : new Array();
-    const $ = cheerio.load(html);
+  async extract(request, querys) {
+    let data, html;
+    const instance = await phantom.create();
+    const page = await instance.createPage();
 
-    querys.forEach(
-      ({ query, fields }) => {
-        $(query)
-          .each(
-            function (i) {
-              const merge = typeof array[i] === 'object';
-              const element = merge ? array[i] : new Object();
+    await page.open(request.url, {
+      headers: request.cookie ? { cookie: request.cookie } : {}
+    });
 
-              for (const key in fields) {
-                element[key] = fields[key] === 'text' ? $(this).text() : this.attribs[fields[key]];
+    page.on('onConsoleMessage', function (msg) {
+      console.log('console: ' + msg);
+    });
+
+    html = await page
+      .property('content');
+
+    data = await page
+      .evaluate(
+        function (querys) {
+          var elements = new Object();
+
+          querys
+            .forEach(
+              function (query) {
+                var tags = document.querySelectorAll(query.query);
+
+                for (var kObject in query.objects) {
+                  var object = query.objects[kObject];
+
+                  var exists = typeof elements[kObject] === 'object';
+                  elements[kObject] = exists ? elements[kObject] : new Array();
+                  
+
+                  for (var i = 0; i < tags.length; i++) {
+                    var manyFields = typeof object.fields === 'object';
+                    var merge = typeof elements[kObject][i] === 'object';
+                    var element = merge ? elements[kObject][i] : (manyFields ? new Object() : '');
+
+                    if (merge || manyFields) {
+                      for (var kField in object.fields) {
+                        element[kField] = tags[i][object.fields[kField]];
+                      }
+                    } else {
+                      if (object.hasOwnProperty('fields')) {
+                        element = tags[i][object.fields];
+                      } else {
+                        elements[kObject] = tags[i][object];
+                      }
+                    }
+
+                    !merge && object.hasOwnProperty('fields') && elements[kObject].push(element);
+                  }
+                }
               }
+            );
 
-              !merge && array.push(element);
-            }
-          );
-      }
-    );
+          return elements;
+        },
+        querys
+      );
+
+    return { data, html };
   }
 };
 

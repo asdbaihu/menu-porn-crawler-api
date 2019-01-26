@@ -11,9 +11,8 @@ class VideoModel {
     this.views = 0;
     this.clicks = 0;
     this.id = undefined;
-    this.time = undefined;
+    this.time = '00:00:00';
     this.createdAt = new Date();
-    this.updatedAt = new Date();
 
     if (!video || typeof video !== 'object') return;
     smartMerge(this, video);
@@ -25,9 +24,9 @@ class VideoModel {
       siteId: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        references: { 
+        references: {
           key: 'id',
-          model: 'sites' 
+          model: 'sites'
         }
       },
       name: {
@@ -41,25 +40,31 @@ class VideoModel {
         type: Sequelize.STRING,
         unique: true,
         allowNull: false,
-        validate: {            
+        validate: {
           isUrl: true
         }
       },
       time: {
         type: Sequelize.TIME,
-        allowNull: false
+        allowNull: false,
+        set(value) {
+          this.setDataValue('time', value.padStart(8, '00:'));
+        }
       },
       views: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        validate: {  
+        set(value) {
+          this.setDataValue('views', parseInt(value.replace(/\s+/g, '')));
+        },
+        validate: {
           isInt: true
         }
       },
       clicks: {
         type: Sequelize.INTEGER,
         defaultValue: 0,
-        validate: {  
+        validate: {
           isInt: true
         }
       }

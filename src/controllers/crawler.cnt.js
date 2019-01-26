@@ -3,162 +3,81 @@ const httpStatus = require('http-status-codes')
 
   , { response, log } = require('../utils/errors')
 
-	, SiteModel = require('../models/site.model')
-	, sitesService = require('../services/sites.service')
-	, crawlerService = require('../services/crawler.service')
-	, superagentService = require('../services/superagent.service')
-
-	, { getPatchString } = require('../utils/helpers');
+  , SiteModel = require('../models/site.model')
+  , VideoModel = require('../models/video.model')
+  , sitesService = require('../services/sites.service')
+  , videosService = require('../services/videos.service')
+  , pornhubService = require('../services/pornhub.service')
+  , crawlerService = require('../services/crawler.service')
+  , videoTagsService = require('../services/video-tags.service');
 
 class CrawlerController {
-	constructor() { }
+  constructor() { }
 
-	async run(req, res) {
-		const sites = await sitesService
-			.findAll()
-			.catch(
-				erro => {
-					res.status(httpStatus.UNPROCESSABLE_ENTITY).send(erro);
-				}
-			);
+  async run(req, res) {
+    const sites = await sitesService
+      .findAll()
+      .catch(
+        erro => {
+          res.status(httpStatus.UNPROCESSABLE_ENTITY).send(erro);
+        }
+      );
 
-		if (sites.length > 0) {
-			for (let i = 0; i < sites.length; i++) {
-				const site = new SiteModel(sites[i]);
-			}
+    if (sites.length > 0) {
+      for (let i = 0; i < sites.length; i++) {
+        const site = new SiteModel(sites[i]);
+      }
 
-		} else {
-			res.status(httpStatus.NO_CONTENT).send('not has sites');
-		}
-	}
+    } else {
+      res.status(httpStatus.NO_CONTENT).send('not has sites');
+    }
+  }
 
-	async pornHub(req, res) {
-		const videos = new Array();
-		const site = await sitesService
-			.findOne({ where: { name: 'PornHub' } })
-			.then(data => new SiteModel(data))
-			.catch(
-				erro => {
-					res.status(httpStatus.UNPROCESSABLE_ENTITY).send(erro);
-				}
-			);
+  async pornHub(req, res) {
+    const site = await sitesService
+      .findOne({ where: { name: 'PornHub' } })
+      .then(data => new SiteModel(data))
+      .catch(
+        erro => {
+          res.status(httpStatus.UNPROCESSABLE_ENTITY).send(erro);
+        }
+      );
 
-		const getScript = ({ text }) => getPatchString(text, '<!--', '//-->');
-		const putScript = script => {
-			let cookie = 'cookie';
+    const request = {
+      url: site.url
+    };
 
-			eval(`const document = { cookie: '', location: { reload() {} } };
-			if (typeof module !== 'undefined') {
-				module.exports = undefined;
-				module = undefined;
-			}
-			${script}
-			go();
-			${cookie} = document.cookie;`);
+    let extrationVideos = await crawlerService.extract(request, pornhubService.querys.$name$url$time$thumb);
 
-			return cookie;
-		};
-		const retryWithCookie = cookie => superagentService.get(site.url, cookie);
+    if (extrationVideos.data.length === 0) {
+      request.cookie = pornhubService.extractCookieFromScript(extrationVideos.html);
+      extrationVideos = await crawlerService.extract(request, pornhubService.querys.$name$url$time$thumb);
+    }
 
-		await superagentService.get(site.url)
-			.then(getScript)
-			.then(putScript)
-			.then(retryWithCookie)
-			.then(
-				({ text }) => {
-					const querys = [
-						{
-							query: '#hotVideosSection li .title a',
-							fields: {
-								name: 'text',
-								url: 'href'
-							}
-						},
-						{
-							query: '#hotVideosSection li .phimage .img img',
-							fields: {
-								thumb: 'src'
-							}
-						}
-					];
+    const videos = extrationVideos.data.videos
+      .map(
+        video => new VideoModel({ siteId: site.id, ...video })
+      );
 
-					crawlerService.extractFromHtml(text, querys, videos);
-				}
-			)
-			// TODO: Este trecho adiciona as tags ainda não esta funcionando devido a renderização das tags não estar pronta no primeiro request
-			.then(
-				async _ => {
-					for (let x = 0; x < 1; x++) {
-						videos[x].tags = new Array();
+    for (let x = 0; x < videos.length; x++) {
+      videos[x].tags = new Array();
+      request.url = videos[x].url;
 
-						await superagentService.get(site.url + videos[x].url)
-							.then(getScript)
-							.then(putScript)
-							.then(
-								cookie => {
-									const phantom = require('phantom');
+      let extrationTags = await crawlerService.extract(request, pornhubService.querys.$tags$views)
 
-									(async function () {
-										const instance = await phantom.create();
-										const page = await instance.createPage();
+      if (extrationTags.data.tags.length === 0) {
+        request.cookie = pornhubService.extractCookieFromScript(extrationTags.html);
+        extrationTags = await crawlerService.extract(request, pornhubService.querys.$tags$views);
+      }
 
-										await page.open(site.url + videos[x].url, {
-											headers: { cookie }
-										});
+      videos[x].tags.push(...extrationTags.data.tags);
+      videos[x].views = extrationTags.data.views;
+      videosService.create(videos[x])
+        .then(e => console.log('sucesso'));
+    }
 
-										await (
-											new Promise(function (res, rej) {
-												setTimeout(function () {
-													console.log('TIMEOUT');
-													page.evaluate(function () {
-														const elements = document.querySelectorAll('.tagsWrapper a[href]');
-														const tags = new Array();
-
-														while (tags.length !== elements.length) {
-															tags.push(elements[tags.length].textContent)
-														}
-
-														return tags;
-													})
-													.then(_ => console.log(_))
-													.then(res)
-													.catch(e => console.log(e));
-
-												}, 5000);
-											})
-										);
-
-										console.log('END');
-									})();
-								}
-							)
-							// .then(retryWithCookie)
-							// .then(
-							// 	({ text }) => {
-							// 		const querys = [
-							// 			{
-							// 				query: '.tagsWrapper a[href]',
-							// 				fields: {
-							// 					name: 'text'
-							// 				}
-							// 			}
-							// 		];
-
-							// 		crawlerService.extractFromHtml(text, querys, videos[x].tags);
-							// 	}
-							// )
-							.catch(
-								e => console.log(e)
-							);
-					}
-				}
-			)
-			.catch(
-				e => console.log(e)
-			);
-
-		res.send(videos);
-	}
+    res.send(videos);
+  }
 
 }
 

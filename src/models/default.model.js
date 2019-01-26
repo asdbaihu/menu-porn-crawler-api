@@ -14,8 +14,6 @@ module.exports = {
     defaultValue: Sequelize.literal('NOW()')
   },
   updatedAt: {
-    type: Sequelize.DATE,
-    allowNull: false,
-    defaultValue: Sequelize.literal('NOW() ON UPDATE NOW()')
+    type: 'DATETIME NOT NULL DEFAULT NOW() ON UPDATE NOW()'
   }
 }

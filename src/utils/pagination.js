@@ -16,7 +16,7 @@ class Pagination {
     this.pages = Math.ceil(total / this.limit);
     this.total = total;
     const filter = {
-      order: this.order.split(',').map(v => v.split(' ')),
+      order: this.order ? this.order.split(',').map(v => v.split(' ')) : undefined,
       offset: this.limit * (this.page - 1),
       limit: this.limit
     };

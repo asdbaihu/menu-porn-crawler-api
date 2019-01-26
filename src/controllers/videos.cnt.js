@@ -14,17 +14,18 @@ class VideosController {
   async getAll(req = express.request, res = express.response) {
     try {
       let pagination = new Pagination(req.query);
-
+      
       const { count } = await videosService
-        .findAndCountAll()
-        .catch(response.r1);
-
+      .findAndCountAll()
+      .catch(response.r1);
+      
       const data = await videosService
-        .findAll(pagination.query(count))
-        .catch(response.r1);
-
+      .findAll(pagination.query(count))
+      .catch(response.r1);
+      
       res.send({ data, ...pagination });
     } catch (e) {
+      console.log(e);
       res.status(e.status).send(e.erro);
     }
   }

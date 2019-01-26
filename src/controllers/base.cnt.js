@@ -13,8 +13,8 @@ const baseController = {
   
       xml
         .open(
-          'GET',
-          '//localhost:3000/v1/crawler/run',
+          'POST',
+          '//localhost:3000/v1/crawler/run/pornhub',
         );
   
       xml.onreadystatechange = _ => {

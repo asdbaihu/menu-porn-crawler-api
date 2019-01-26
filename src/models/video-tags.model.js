@@ -8,7 +8,6 @@ class VideoTagsModel {
     this.name = '';
     this.videoId = '';
     this.id = undefined;
-    this.tagId = undefined;
     this.createdAt = new Date();
     this.updatedAt = new Date();
 
@@ -19,14 +18,6 @@ class VideoTagsModel {
   static defineEntityStructure() {
     return {
       ...defaultFields,
-      tagId: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: { 
-          key: 'id',
-          model: 'tags' 
-        }
-      },
       videoId: {
         type: Sequelize.INTEGER,
         allowNull: false,
