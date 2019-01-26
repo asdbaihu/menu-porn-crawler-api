@@ -39,6 +39,7 @@ const express   = require('express')
 function start() {
   const logger = _ => log(`${name} start in ${mode} on http://${host}:${port}/ at ${version}.`);
   const server = http.createServer(app).listen(port, host, logger);
+  server.timeout = 0;
   middlewares(app);
   parser(app);
   routes(app); 

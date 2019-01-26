@@ -3,5 +3,6 @@ const controller = require('../controllers/crawler.cnt')
   , router = express.Router();
 
 router.post('/run/pornhub', controller.pornHub);
+router.post('/run/xvideos', controller.xVideos);
 
 module.exports = router;

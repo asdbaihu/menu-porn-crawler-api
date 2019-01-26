@@ -1,5 +1,4 @@
 const express = require('express')
-  , httpStatus = require('http-status-codes')
 
   , { response, log } = require('../utils/errors')
   , Pagination = require('../utils/pagination')
@@ -25,7 +24,6 @@ class VideosController {
       
       res.send({ data, ...pagination });
     } catch (e) {
-      console.log(e);
       res.status(e.status).send(e.erro);
     }
   }

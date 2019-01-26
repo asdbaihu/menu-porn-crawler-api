@@ -20,6 +20,12 @@ module.exports = {
                 name: 'PornHub',
                 url: 'https://pt.pornhub.com',
               }
+            ),
+            new SiteModel(
+              {
+                name: 'xVideos',
+                url: 'https://www.xvideos.com',
+              }
             )
           ], {})
       );

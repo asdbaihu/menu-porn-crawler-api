@@ -6,6 +6,7 @@ const Sequelize = require('sequelize')
 class VideoModel {
   constructor(video) {
     this.siteId = 0;
+    this.thumb = '';
     this.name = '';
     this.url = '';
     this.views = 0;
@@ -13,6 +14,7 @@ class VideoModel {
     this.id = undefined;
     this.time = '00:00:00';
     this.createdAt = new Date();
+    this.updatedAt = new Date();
 
     if (!video || typeof video !== 'object') return;
     smartMerge(this, video);
@@ -44,18 +46,28 @@ class VideoModel {
           isUrl: true
         }
       },
+      thumb: {
+        type: Sequelize.STRING,
+        unique: true,
+        allowNull: false,
+        validate: {
+          isUrl: true
+        }
+      },
       time: {
         type: Sequelize.TIME,
         allowNull: false,
         set(value) {
-          this.setDataValue('time', value.padStart(8, '00:'));
+          value = value.replace(/(\w+)h\s+/g, '$1:');         // correct h
+          value = value.replace(/(\w+)\s+min/g, '$1:00');     // correct min
+          this.setDataValue('time', value.padStart(8, '00:'));// complete hrs
         }
       },
       views: {
         type: Sequelize.INTEGER,
         allowNull: false,
         set(value) {
-          this.setDataValue('views', parseInt(value.replace(/\s+/g, '')));
+          this.setDataValue('views', parseInt(value.replace(/\s+/g, '').replace(',', '')));
         },
         validate: {
           isInt: true

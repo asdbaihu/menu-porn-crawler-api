@@ -13,25 +13,26 @@ const baseController = {
   
       xml
         .open(
-          'POST',
-          '//localhost:3000/v1/crawler/run/pornhub',
+          'GET',
+          '//localhost:3000/v1/videos',
         );
   
       xml.onreadystatechange = _ => {
         if (xml.readyState === 4) {
-          const data = JSON.parse(xml.responseText);
+          const response = JSON.parse(xml.responseText);
   
-          data.forEach(
-            e => {
-              const img = document.createElement('img');
-              const a = document.createElement('a');
-              img.src = e.thumb;
-              a.title = e.name;
-              a.href = e.url;
-              a.appendChild(img);
-              document.body.appendChild(a);
-            }
-          );
+          response.data
+            .forEach(
+              e => {
+                const img = document.createElement('img');
+                const a = document.createElement('a');
+                img.src = e.thumb;
+                a.title = e.name;
+                a.href = e.url;
+                a.appendChild(img);
+                document.body.appendChild(a);
+              }
+            );
         }
       }
   

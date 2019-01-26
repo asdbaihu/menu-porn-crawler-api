@@ -16,11 +16,16 @@ module.exports = {
         .bulkInsert('video_tags', [
           new VideoTagsModel(
             {
-              tagId: 1,
               videoId: 1,
-              name: 'milf'
+              name: 'butt'
             }
-          )
+          ),
+          new VideoTagsModel(
+            {
+              videoId: 1,
+              name: 'blowjob'
+            }
+          ) 
         ], {})
     );
   },

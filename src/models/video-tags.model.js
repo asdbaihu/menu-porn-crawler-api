@@ -20,6 +20,7 @@ class VideoTagsModel {
       ...defaultFields,
       videoId: {
         type: Sequelize.INTEGER,
+        onDelete: 'CASCADE',
         allowNull: false,
         references: { 
           key: 'id',
@@ -28,7 +29,6 @@ class VideoTagsModel {
       },
       name: {
         type: Sequelize.STRING,
-        unique: true,
         allowNull: false,
         set(value) {
           this.setDataValue('name', value.toLowerCase());

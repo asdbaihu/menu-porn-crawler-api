@@ -1,12 +1,10 @@
-const { getPatchString } = require('../utils/helpers');
-
-class PornHubService {
+class XVideosService {
 
   constructor() {
     this.querys = {
       $name$url$time$thumb: [
         {
-          query: '#hotVideosSection li .title a',
+          query: '.mozaique .thumb-block .thumb-under p a[href][title]',
           objects: {
             videos: {
               fields: {
@@ -17,7 +15,7 @@ class PornHubService {
           }
         },                
         {
-          query: '#hotVideosSection .duration',
+          query: '.mozaique .thumb-under .duration',
           objects: {
             videos: {
               fields: {
@@ -27,7 +25,7 @@ class PornHubService {
           }
         },
         {
-          query: '#hotVideosSection li .phimage .img img',
+          query: '.mozaique .thumb a[href] img',
           objects: {
             videos: {
               fields: {
@@ -39,7 +37,7 @@ class PornHubService {
       ],
       $tags$views: [
         {
-          query: '.tagsWrapper a[href]',
+          query: '.video-tags-list li a[href]:not(.view-more)',
           objects: {
             tags: {
               fields: 'textContent'
@@ -47,7 +45,7 @@ class PornHubService {
           }
         },        
         {
-          query: '.views .count',
+          query: '#nb-views-number',
           objects: {
             views: 'textContent'
           }
@@ -55,22 +53,6 @@ class PornHubService {
       ]
     }
   }
-
-  extractCookieFromScript(html) {
-    const script = getPatchString(html, '<!--', '//-->');
-    let cookie = 'cookie';
-
-    eval(`const document = { cookie: '', location: { reload() {} } };
-    if (typeof module !== 'undefined') {
-      module.exports = undefined;
-      module = undefined;
-    }
-    ${script}
-    go();
-    ${cookie} = document.cookie;`);
-
-    return cookie;
-  };
 };
 
-module.exports = new PornHubService();
+module.exports = new XVideosService();
