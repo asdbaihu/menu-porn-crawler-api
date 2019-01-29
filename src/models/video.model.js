@@ -25,6 +25,7 @@ class VideoModel {
       ...defaultFields,
       siteId: {
         type: Sequelize.INTEGER,
+        onDelete: 'CASCADE',
         allowNull: false,
         references: {
           key: 'id',
@@ -58,8 +59,13 @@ class VideoModel {
         type: Sequelize.TIME,
         allowNull: false,
         set(value) {
-          value = value.replace(/(\w+)h\s+/g, '$1:');         // correct h
-          value = value.replace(/(\w+)\s+min/g, '$1:00');     // correct min
+          const minutes = value.match(/([0-9]{1,2})\s*(mins|min)/g);
+          const seconds = value.match(/([0-9]{1,2})\s*(secs|sec)/g);
+
+          value = value.replace(/([0-9]{1,2})\s*h/g, `$1${minutes ? ':':':00'}`);
+          value = value.replace(/([0-9]{1,2})\s*(mins|min)/g, `$1${seconds ? ':':':00'}`);
+          value = value.replace(/([0-9]{1,2})\s*(secs|sec)/g, '$1');
+
           this.setDataValue('time', value.padStart(8, '00:'));// complete hrs
         }
       },
@@ -67,7 +73,7 @@ class VideoModel {
         type: Sequelize.INTEGER,
         allowNull: false,
         set(value) {
-          this.setDataValue('views', parseInt(value.replace(/\s+/g, '').replace(',', '')));
+          this.setDataValue('views', parseInt(value.toString().replace(/\s+/g, '').replace(',', '')));
         },
         validate: {
           isInt: true

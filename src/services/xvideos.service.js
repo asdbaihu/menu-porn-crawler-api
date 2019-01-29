@@ -2,7 +2,7 @@ class XVideosService {
 
   constructor() {
     this.querys = {
-      $name$url$time$thumb: [
+      $name$url$thumb: [
         {
           query: '.mozaique .thumb-block .thumb-under p a[href][title]',
           objects: {
@@ -13,17 +13,7 @@ class XVideosService {
               }
             }
           }
-        },                
-        {
-          query: '.mozaique .thumb-under .duration',
-          objects: {
-            videos: {
-              fields: {
-                time: 'textContent'
-              }
-            }
-          }
-        },
+        },      
         {
           query: '.mozaique .thumb a[href] img',
           objects: {
@@ -35,7 +25,7 @@ class XVideosService {
           }
         }
       ],
-      $tags$views: [
+      $tags$views$time: [
         {
           query: '.video-tags-list li a[href]:not(.view-more)',
           objects: {
@@ -43,7 +33,13 @@ class XVideosService {
               fields: 'textContent'
             }
           }
-        },        
+        },                  
+        {
+          query: '.page-title .duration',
+          objects: {
+            time: 'textContent'
+          }
+        },
         {
           query: '#nb-views-number',
           objects: {

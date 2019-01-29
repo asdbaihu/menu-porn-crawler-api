@@ -114,7 +114,7 @@ class CrawlerController {
       };
 
       let extrationVideos = await crawlerService
-        .extract(request, xvideosService.querys.$name$url$time$thumb)
+        .extract(request, xvideosService.querys.$name$url$thumb)
         .catch(response.r11);
 
       const videos = extrationVideos.data.videos
@@ -123,15 +123,14 @@ class CrawlerController {
         );
 
       for (let x = 0; x < videos.length; x++) {
-        videos[x].tags = new Array();
         request.url = videos[x].url;
 
         let extrationTags = await crawlerService
-          .extract(request, xvideosService.querys.$tags$views)
+          .extract(request, xvideosService.querys.$tags$views$time)
           .catch(response.r11);
 
-        videos[x].tags.push(...extrationTags.data.tags);
         videos[x].views = extrationTags.data.views;
+        videos[x].time = extrationTags.data.time;
 
         const video = await videosService
           .findOrCreate({
@@ -146,11 +145,15 @@ class CrawlerController {
           .then(result => result[0])
           .catch(response.r1);
 
+        videos[x] = video.dataValues;
+        videos[x].tags = new Array();
+        videos[x].tags.push(...extrationTags.data.tags);
+
         videos[x].tags
           .forEach(
             tag => {
               videoTagsService
-                .create(new VideoTagsModel({ videoId: video.dataValues.id, name: tag }))
+                .create(new VideoTagsModel({ videoId: videos[x].id, name: tag }))
                 .catch(response.r1)
             }
           );

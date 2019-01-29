@@ -3,5 +3,6 @@ const controller = require('../controllers/videos.cnt')
   , router = express.Router();
 
 router.get('/', controller.getAll);
+router.post('/:id/click', controller.click);
 
 module.exports = router;
